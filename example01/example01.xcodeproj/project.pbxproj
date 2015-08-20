@@ -16,6 +16,9 @@
 		E6D3E1B71B85A90800830571 /* data.json in Resources */ = {isa = PBXBuildFile; fileRef = E6D3E1B61B85A90800830571 /* data.json */; };
 		E6D3E1BE1B85B02E00830571 /* NSArray+log.m in Sources */ = {isa = PBXBuildFile; fileRef = E6D3E1BB1B85B02E00830571 /* NSArray+log.m */; };
 		E6D3E1BF1B85B02E00830571 /* NSDictionary+log.m in Sources */ = {isa = PBXBuildFile; fileRef = E6D3E1BD1B85B02E00830571 /* NSDictionary+log.m */; };
+		E6D3E1C31B85B55E00830571 /* CollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = E6D3E1C21B85B55E00830571 /* CollectionViewCell.swift */; };
+		E6D3E1C51B85B6A600830571 /* CollectionViewHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = E6D3E1C41B85B6A600830571 /* CollectionViewHeader.swift */; };
+		E6D3E1C81B85C2A300830571 /* UIButton+CollectionCellStyle.m in Sources */ = {isa = PBXBuildFile; fileRef = E6D3E1C71B85C2A300830571 /* UIButton+CollectionCellStyle.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -45,6 +48,10 @@
 		E6D3E1BB1B85B02E00830571 /* NSArray+log.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSArray+log.m"; sourceTree = "<group>"; };
 		E6D3E1BC1B85B02E00830571 /* NSDictionary+log.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSDictionary+log.h"; sourceTree = "<group>"; };
 		E6D3E1BD1B85B02E00830571 /* NSDictionary+log.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSDictionary+log.m"; sourceTree = "<group>"; };
+		E6D3E1C21B85B55E00830571 /* CollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CollectionViewCell.swift; sourceTree = "<group>"; };
+		E6D3E1C41B85B6A600830571 /* CollectionViewHeader.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CollectionViewHeader.swift; sourceTree = "<group>"; };
+		E6D3E1C61B85C2A300830571 /* UIButton+CollectionCellStyle.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIButton+CollectionCellStyle.h"; sourceTree = "<group>"; };
+		E6D3E1C71B85C2A300830571 /* UIButton+CollectionCellStyle.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIButton+CollectionCellStyle.m"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -87,8 +94,9 @@
 			isa = PBXGroup;
 			children = (
 				E6D3E1B81B85B02300830571 /* Category */,
+				E6D3E1C01B85B4E300830571 /* Controller */,
+				E6D3E1C11B85B4F800830571 /* View */,
 				E6D3E1961B85A78C00830571 /* AppDelegate.swift */,
-				E6D3E1981B85A78C00830571 /* ViewController.swift */,
 				E6D3E19A1B85A78C00830571 /* Main.storyboard */,
 				E6D3E19D1B85A78C00830571 /* Images.xcassets */,
 				E6D3E19F1B85A78C00830571 /* LaunchScreen.xib */,
@@ -126,6 +134,8 @@
 		E6D3E1B81B85B02300830571 /* Category */ = {
 			isa = PBXGroup;
 			children = (
+				E6D3E1C61B85C2A300830571 /* UIButton+CollectionCellStyle.h */,
+				E6D3E1C71B85C2A300830571 /* UIButton+CollectionCellStyle.m */,
 				E6D3E1BA1B85B02E00830571 /* NSArray+log.h */,
 				E6D3E1BB1B85B02E00830571 /* NSArray+log.m */,
 				E6D3E1BC1B85B02E00830571 /* NSDictionary+log.h */,
@@ -133,6 +143,24 @@
 				E6D3E1B91B85B02E00830571 /* example01-Bridging-Header.h */,
 			);
 			name = Category;
+			sourceTree = "<group>";
+		};
+		E6D3E1C01B85B4E300830571 /* Controller */ = {
+			isa = PBXGroup;
+			children = (
+				E6D3E1981B85A78C00830571 /* ViewController.swift */,
+			);
+			name = Controller;
+			sourceTree = "<group>";
+		};
+		E6D3E1C11B85B4F800830571 /* View */ = {
+			isa = PBXGroup;
+			children = (
+				E6D3E1C21B85B55E00830571 /* CollectionViewCell.swift */,
+				E6D3E1C41B85B6A600830571 /* CollectionViewHeader.swift */,
+			);
+			name = View;
+			path = ..;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -236,6 +264,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E6D3E1C31B85B55E00830571 /* CollectionViewCell.swift in Sources */,
+				E6D3E1C51B85B6A600830571 /* CollectionViewHeader.swift in Sources */,
+				E6D3E1C81B85C2A300830571 /* UIButton+CollectionCellStyle.m in Sources */,
 				E6D3E1BE1B85B02E00830571 /* NSArray+log.m in Sources */,
 				E6D3E1BF1B85B02E00830571 /* NSDictionary+log.m in Sources */,
 				E6D3E1991B85A78C00830571 /* ViewController.swift in Sources */,
