@@ -29,6 +29,7 @@ class ViewController: UIViewController, UICollectionViewDataSource, UICollection
     let kCollectionViewCellHeight           : CGFloat          = 30 // item height
     
     let kCellBtnHorizonPadding              : CGFloat          = 16 // item 中按钮padding
+    let kCollectionViewItemButtonImageToTextMargin : CGFloat   = 5  // item 文字和图片的距离
     
     // MARK: -
     
@@ -40,6 +41,12 @@ class ViewController: UIViewController, UICollectionViewDataSource, UICollection
         // 打印
         // println(NSDictionary(dictionary: dataSource).descriptionWithLocale(nil))
         // println(dataSource.keys.array)
+        
+        for(var i=0;i<dataSource.keys.array.count;i++) {
+            
+            var rowsArray = caculateItemsCountForEveryRow(items: arrayForSection(section: i))
+            println(rowsArray)
+        }
     }
 
     override func didReceiveMemoryWarning() {
@@ -96,7 +103,7 @@ class ViewController: UIViewController, UICollectionViewDataSource, UICollection
         collectionView  = UICollectionView(frame: view.bounds, collectionViewLayout: layout)
         
         // 默认为黑色，这里设置为白色以便显示
-        collectionView.backgroundColor = UIColor.magentaColor()
+        collectionView.backgroundColor = UIColor.whiteColor()
         
         // 内容下移20，为了不遮挡状态栏
         collectionView.contentInset = UIEdgeInsetsMake(20, 0, 0, 0)
@@ -133,8 +140,26 @@ class ViewController: UIViewController, UICollectionViewDataSource, UICollection
         // 处理数据
         let item  = dicForItem(indexPath: indexPath)
         let text  = item[kDataSourceCellTextKey]
+        let img   = item[kDataSourceCellPictureKey]
         
+        // 文字
         collectionViewCell.button.setTitle(text, forState: UIControlState.Normal)
+        collectionViewCell.button.setTitle(text, forState: UIControlState.Selected)
+        
+        // 设置图片
+        if img != nil {
+            
+            collectionViewCell.button.setImage(UIImage(named: "home_btn_shrink"), forState: UIControlState.Normal)
+            let spacing = kCollectionViewItemButtonImageToTextMargin
+            collectionViewCell.button.imageEdgeInsets = UIEdgeInsetsMake(0, 0, 0, spacing)
+            collectionViewCell.button.titleEdgeInsets = UIEdgeInsetsMake(0, spacing, 0, 0)
+            
+        } else {
+            
+            collectionViewCell.button.setImage(nil, forState: UIControlState.Normal)
+            collectionViewCell.button.imageEdgeInsets = UIEdgeInsetsMake(0, 0, 0, 0)
+            collectionViewCell.button.titleEdgeInsets = UIEdgeInsetsMake(0, 0, 0, 0)
+        }
         
         return collectionViewCell
     }
@@ -173,8 +198,7 @@ class ViewController: UIViewController, UICollectionViewDataSource, UICollection
     func collectionView(collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAtIndexPath indexPath: NSIndexPath) -> CGSize {
         
         let item = dicForItem(indexPath: indexPath)
-        let text = item[kDataSourceCellTextKey]!
-        let cellWidth = caculateItemWidth(text: text)
+        let cellWidth = caculateItemWidth(item: item)
         
         return CGSizeMake(cellWidth, kCollectionViewCellHeight)
     }
@@ -208,19 +232,155 @@ class ViewController: UIViewController, UICollectionViewDataSource, UICollection
     /**
      * 返回item的width
      *
-     * @param text 文字
+     * @indexPath item单元格数据
      * 
      * @return item的宽度
      */
-    private func caculateItemWidth(#text:String) -> CGFloat {
+    private func caculateItemWidth(#item:[String:String]) -> CGFloat {
+        
+        let text = item[kDataSourceCellTextKey]!
+        let img  = item[kDataSourceCellPictureKey]
         
         let size = (text as NSString).sizeWithAttributes([NSFontAttributeName:UIFont.systemFontOfSize(16)])
         let limitWidth = CGRectGetWidth(collectionView.frame) - kCollectionViewToLeftMargin - kCollectionViewToRightMargin
         var cellWidth:CGFloat = CGFloat(ceilf(Float(size.width))) + kCellBtnHorizonPadding
+        
+        // 如果包含图片，增加item的宽度
+        if img != nil {
+            
+            cellWidth += kCellBtnHorizonPadding
+        }
+        
+        // 如果通过文字+图片计算出来的宽度大于等于限制宽度，则改变单元格item的实际宽度
         cellWidth = cellWidth >= limitWidth ? limitWidth : cellWidth
         
         return cellWidth
     }
+    
+    /**
+     * 返回item包括左右边距做需要占据的长度
+     *
+     * @indexPath item 单元格数据
+     * @index item位置
+     *
+     * @return item的占据的宽度
+     */
+    private func caculateItemLimitWidth (#item:[String:String],indexAtItems index:Int) -> CGFloat {
+        
+        let contentViewWidth = CGRectGetWidth(collectionView.frame) - kCollectionViewToLeftMargin - kCollectionViewToRightMargin
+        
+        // 计算单元格item的实际宽度
+        let itemWidth = caculateItemWidth(item: item)
+        
+        // 单元格item占据的宽度，用于计算该item单元格属于哪一行
+        var limitWidth : CGFloat!
+        
+        // 如果item的实际宽度等于最大限制宽度，那么item占据宽度等于最大限制宽度
+        if itemWidth == contentViewWidth {
+            
+            limitWidth = itemWidth
+        } else {
+            
+            // 如果单元格item是数组中第一个，那么不需要+水平间距
+            if index == 0 {
+                
+                limitWidth = itemWidth
+            } else {
+                
+                let contentViewWidth2 = contentViewWidth - kCollectionViewCellsHorizonPadding
+                
+                if itemWidth >= contentViewWidth2 {
+                    
+                    // 如果单元格item不是第一个，而且itemWidth大于最大限制宽度-水平间距，那么item占据宽度为最大限制
+                    limitWidth = contentViewWidth
+                } else {
+                    
+                    // 正常占据
+                    limitWidth = itemWidth + kCollectionViewCellsHorizonPadding
+                }
+            }
+        }
+        return limitWidth
+    }
+    
+    /**
+     * 计算指定数组第一行的Item数量
+     * 
+     * @param items
+     *
+     * @return 指定数组第一行的Item数量
+     */
+    private func caculateItemsCountForFirstRow (#items:[[String:String]]) -> Int {
+        
+        var itemsCount: Int = 0
+        let contentViewWidth = CGRectGetWidth(collectionView.frame) - kCollectionViewToLeftMargin - kCollectionViewToRightMargin
+        
+        let widthArray = NSMutableArray()
+        for (var i=0; i<items.count; i++) {
+            
+            let limitWidth = caculateItemLimitWidth(item: items[i], indexAtItems: i)
+            widthArray.addObject(limitWidth)
+            
+            let sumArray = NSArray(array: widthArray)
+            let sum:CGFloat = sumArray.valueForKeyPath("@sum.self") as! CGFloat
+            
+            if sum <= contentViewWidth {
+                
+                itemsCount++
+            } else {
+                break
+            }
+        }
+        
+        return itemsCount
+    }
+    
+    /**
+     * 返回指定数组每行包行的单元格个数
+     * @param items
+     * 
+     * @return 行数组
+     */
+    private func caculateItemsCountForEveryRow(var #items:[[String:String]]) -> [Int] {
+        
+        var resultArray = [Int]()
+        let tempArray = NSMutableArray(array: items)
+        
+        let itemCount = caculateItemsCountForFirstRow(items: items)
+        resultArray.append(itemCount)
+        
+        for item in tempArray {
+            
+            let itemCount = caculateItemsCountForFirstRow(items: items)
+            
+            if items.count != itemCount {
+                
+                items.removeRange(Range(start: 0,end: itemCount))
+                
+                let itemCount = caculateItemsCountForFirstRow(items: items)
+                resultArray.append(itemCount)
+            }
+        }
+        return resultArray
+    }
+    
+    /**
+     * 返回每节包含多少行
+     */
+    private func caculateRowsCountForSection() -> [Int] {
+        
+        var resultArray = [Int]()
+        
+        for(var i=0; i<dataSource.count; i++) {
+            
+            let items = arrayForSection(section: i)
+            let rowsCount = caculateItemsCountForEveryRow(items: items).count
+            resultArray.append(rowsCount)
+        }
+        return resultArray
+    }
+    
+    // MARK: -  处理数据
     
     /**
      * 返回节对应的数组

@@ -19,6 +19,7 @@ class CollectionViewHeader: UICollectionReusableView {
     let kCureOfLineOffX     :CGFloat = 16
     
     let kHeaderViewHeigt    :CGFloat = 38
+    let kImageToTextMargin  :CGFloat = 7
     
     // MARK: -
     
@@ -39,7 +40,7 @@ class CollectionViewHeader: UICollectionReusableView {
     private func setup() {
         
         // 背景色
-        self.backgroundColor = UIColor.grayColor()
+        //self.backgroundColor = UIColor.grayColor()
         
         // 分割线
         setupLine()
@@ -78,6 +79,7 @@ class CollectionViewHeader: UICollectionReusableView {
         titleButton.titleLabel?.textAlignment = NSTextAlignment.Left
         titleButton.setTitleColor(UIColor.blackColor(), forState: UIControlState.Normal)
         titleButton.setTitleColor(UIColor.blackColor(), forState: UIControlState.Selected)
+        titleButton.setImage(UIImage(named: "home_btn_cosmetic"), forState: UIControlState.Normal)
         
         // add
         self.addSubview(titleButton)
@@ -85,5 +87,21 @@ class CollectionViewHeader: UICollectionReusableView {
     
     private func setupRightButton() {
         
+        // create
+        rightButton = UIButton(frame: CGRectMake(CGRectGetWidth(UIScreen.mainScreen().bounds) - kMoreButtonWidth - kCureOfLineOffX, 0, kMoreButtonWidth, CGRectGetHeight(self.bounds)))
+        rightButton.setImage(UIImage(named: "home_btn_more_normal"), forState: UIControlState.Normal)
+        rightButton.setImage(UIImage(named: "home_btn_more_selected"), forState: UIControlState.Selected)
+        rightButton.setTitleColor(UIColor.blackColor(), forState: UIControlState.Normal)
+        rightButton.setTitleColor(UIColor.blackColor(), forState: UIControlState.Selected)
+        rightButton.titleLabel?.textAlignment = NSTextAlignment.Right
+        rightButton.setTitle("更多", forState: UIControlState.Normal)
+        rightButton.setTitle("收起", forState: UIControlState.Selected)
+        rightButton.titleLabel?.font = UIFont.systemFontOfSize(12)
+        rightButton.titleEdgeInsets = UIEdgeInsetsMake(0, -rightButton.imageView!.frame.size.width-kImageToTextMargin, 0, rightButton.imageView!.frame.size.width)
+        rightButton.imageEdgeInsets = UIEdgeInsetsMake(0, rightButton.titleLabel!.frame.size.width, 0, -rightButton.titleLabel!.frame.size.width)
+        
+        // add
+        self.addSubview(rightButton)
+
     }
 }
