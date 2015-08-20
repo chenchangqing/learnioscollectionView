@@ -30,7 +30,8 @@ class CollectionViewCell: UICollectionViewCell {
     
     private func setup() {
         
-        button = UIButton(frame: self.bounds)
+        self.backgroundColor = UIColor.purpleColor()
+        button = UIButton(frame: CGRectInset(self.bounds, 0, 0))
         button.generalStyle()
         button.homeStyle()
         contentView.addSubview(button)

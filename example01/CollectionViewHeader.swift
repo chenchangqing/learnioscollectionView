@@ -30,6 +30,7 @@ class CollectionViewHeader: UICollectionReusableView {
     
     private func setup() {
         
+        self.backgroundColor = UIColor.grayColor()
         titleL = UILabel(frame: self.bounds)
         self.addSubview(titleL)
     }

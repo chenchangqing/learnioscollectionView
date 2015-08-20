@@ -13,11 +13,20 @@ class ViewController: UIViewController, UICollectionViewDataSource, UICollection
     private var dataSource      : [String:[[String:String]]]!
     private var collectionView  : UICollectionView!
     
-    let kCellIdentifier           = "CellIdentifier"
-    let kHeaderViewCellIdentifier = "HeaderViewCellIdentifier"
+    let kCellIdentifier           = "CellIdentifier"                // 重用单元格ID
+    let kHeaderViewCellIdentifier = "HeaderViewCellIdentifier"      // 重用标题ID
     
-    let kDataSourceCellTextKey    = "Food_Name";
-    let kDataSourceCellPictureKey = "Picture";
+    let kDataSourceCellTextKey    = "Food_Name";                    // json key1
+    let kDataSourceCellPictureKey = "Picture";                      // json key2
+    
+    // collectionView的 左、上、右、下 边距
+    let kCollectionViewToLeftMargin         : CGFloat          = 16
+    let kCollectionViewToTopMargin          : CGFloat          = 12
+    let kCollectionViewToRightMargin        : CGFloat          = 16
+    let kCollectionViewToBottomtMargin      : CGFloat          = 10
+    
+    let kCollectionViewCellsHorizonPadding  : CGFloat          = 12 // items 之间的水平间距padding
+    let kCollectionViewCellHeight           : CGFloat          = 30 // item height
     
     // MARK: -
     
@@ -85,7 +94,10 @@ class ViewController: UIViewController, UICollectionViewDataSource, UICollection
         collectionView  = UICollectionView(frame: view.bounds, collectionViewLayout: layout)
         
         // 默认为黑色，这里设置为白色以便显示
-        collectionView.backgroundColor = UIColor.whiteColor()
+        collectionView.backgroundColor = UIColor.magentaColor()
+        
+        // 内容下移20，为了不遮挡状态栏
+        collectionView.contentInset = UIEdgeInsetsMake(20, 0, 0, 0)
         
         // add collectionView
         view.addSubview(collectionView)
@@ -117,10 +129,8 @@ class ViewController: UIViewController, UICollectionViewDataSource, UICollection
         let collectionViewCell = collectionView.dequeueReusableCellWithReuseIdentifier(kCellIdentifier, forIndexPath: indexPath) as! CollectionViewCell
         
         // 处理数据
-        let key   = dataSource.keys.array[indexPath.section]
-        let items = dataSource[key]
-        let item  = items?[indexPath.row]
-        let text  = item?[kDataSourceCellTextKey]
+        let item  = dicForItem(indexPath: indexPath)
+        let text  = item[kDataSourceCellTextKey]
         
         collectionViewCell.button.setTitle(text, forState: UIControlState.Normal)
         
@@ -159,7 +169,11 @@ class ViewController: UIViewController, UICollectionViewDataSource, UICollection
      */
     func collectionView(collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAtIndexPath indexPath: NSIndexPath) -> CGSize {
         
-        return CGSizeMake(100, 30)
+        let item = dicForItem(indexPath: indexPath)
+        let text = item[kDataSourceCellTextKey]!
+        let cellWidth = caculateItemWidth(text: text)
+        
+        return CGSizeMake(cellWidth, kCollectionViewCellHeight)
     }
     
     /**
@@ -167,15 +181,7 @@ class ViewController: UIViewController, UICollectionViewDataSource, UICollection
      */
     func collectionView(collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAtIndex section: Int) -> UIEdgeInsets {
         
-        return UIEdgeInsetsMake(10, 16, 10, 16)
-    }
-    
-    /**
-     * items 上下之间的最小间距
-     */
-    func collectionView(collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAtIndex section: Int) -> CGFloat {
-        
-        return 12
+        return UIEdgeInsetsMake(kCollectionViewToTopMargin, kCollectionViewToLeftMargin, kCollectionViewToBottomtMargin, kCollectionViewToRightMargin)
     }
     
     /**
@@ -183,7 +189,7 @@ class ViewController: UIViewController, UICollectionViewDataSource, UICollection
      */
     func collectionView(collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumInteritemSpacingForSectionAtIndex section: Int) -> CGFloat {
         
-        return 12
+        return kCollectionViewCellsHorizonPadding
     }
     
     /**
@@ -191,7 +197,45 @@ class ViewController: UIViewController, UICollectionViewDataSource, UICollection
      */
     func collectionView(collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize {
         
-        return CGSizeMake(CGRectGetWidth(view.bounds) - 32, 38)
+        return CGSizeMake(CGRectGetWidth(view.bounds) - 50, 38)
+    }
+    
+    // MARK: - caculate
+    
+    /**
+     * 返回item的width
+     *
+     * @param text 文字
+     * 
+     * @return item的宽度
+     */
+    private func caculateItemWidth(#text:String) -> CGFloat {
+        
+        let size = (text as NSString).sizeWithAttributes([NSFontAttributeName:UIFont.systemFontOfSize(16)])
+        let cellWidth = ceilf(Float(size.width))
+        return CGFloat(cellWidth)
+    }
+    
+    /**
+     * 返回节对应的数组
+     */
+    private func arrayForSection(#section:Int) -> [[String:String]] {
+        
+        // 处理数据
+        let key   = dataSource.keys.array[section]
+        let items = dataSource[key]!
+        return items
+    }
+    
+    /**
+     * 返回item数据
+     */
+    private func dicForItem(#indexPath:NSIndexPath) -> [String:String] {
+        
+        let items = arrayForSection(section: indexPath.section)
+        let item  = items[indexPath.row]
+        
+        return item
     }
 }
 
