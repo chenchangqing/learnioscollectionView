@@ -28,6 +28,8 @@ class ViewController: UIViewController, UICollectionViewDataSource, UICollection
     let kCollectionViewCellsHorizonPadding  : CGFloat          = 12 // items 之间的水平间距padding
     let kCollectionViewCellHeight           : CGFloat          = 30 // item height
     
+    let kCellBtnHorizonPadding              : CGFloat          = 16 // item 中按钮padding
+    
     // MARK: -
     
     override func viewDidLoad() {
@@ -90,7 +92,7 @@ class ViewController: UIViewController, UICollectionViewDataSource, UICollection
     private func setupCollectionView() {
         
         // 创建collectionView
-        let layout      = UICollectionViewFlowLayout()
+        let layout      = UICollectionViewLeftAlignedLayout()
         collectionView  = UICollectionView(frame: view.bounds, collectionViewLayout: layout)
         
         // 默认为黑色，这里设置为白色以便显示
@@ -213,7 +215,7 @@ class ViewController: UIViewController, UICollectionViewDataSource, UICollection
         
         let size = (text as NSString).sizeWithAttributes([NSFontAttributeName:UIFont.systemFontOfSize(16)])
         let cellWidth = ceilf(Float(size.width))
-        return CGFloat(cellWidth)
+        return CGFloat(cellWidth) + kCellBtnHorizonPadding
     }
     
     /**

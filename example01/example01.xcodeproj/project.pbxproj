@@ -19,6 +19,7 @@
 		E6D3E1C31B85B55E00830571 /* CollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = E6D3E1C21B85B55E00830571 /* CollectionViewCell.swift */; };
 		E6D3E1C51B85B6A600830571 /* CollectionViewHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = E6D3E1C41B85B6A600830571 /* CollectionViewHeader.swift */; };
 		E6D3E1C81B85C2A300830571 /* UIButton+CollectionCellStyle.m in Sources */ = {isa = PBXBuildFile; fileRef = E6D3E1C71B85C2A300830571 /* UIButton+CollectionCellStyle.m */; };
+		E6D3E1CC1B85D3A300830571 /* UICollectionViewLeftAlignedLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = E6D3E1CB1B85D3A300830571 /* UICollectionViewLeftAlignedLayout.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -52,6 +53,8 @@
 		E6D3E1C41B85B6A600830571 /* CollectionViewHeader.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CollectionViewHeader.swift; sourceTree = "<group>"; };
 		E6D3E1C61B85C2A300830571 /* UIButton+CollectionCellStyle.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIButton+CollectionCellStyle.h"; sourceTree = "<group>"; };
 		E6D3E1C71B85C2A300830571 /* UIButton+CollectionCellStyle.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIButton+CollectionCellStyle.m"; sourceTree = "<group>"; };
+		E6D3E1CA1B85D3A300830571 /* UICollectionViewLeftAlignedLayout.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UICollectionViewLeftAlignedLayout.h; sourceTree = "<group>"; };
+		E6D3E1CB1B85D3A300830571 /* UICollectionViewLeftAlignedLayout.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UICollectionViewLeftAlignedLayout.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -93,6 +96,7 @@
 		E6D3E1931B85A78B00830571 /* example01 */ = {
 			isa = PBXGroup;
 			children = (
+				E6D3E1C91B85D39700830571 /* UICollectionViewLeftAlignedLayout */,
 				E6D3E1B81B85B02300830571 /* Category */,
 				E6D3E1C01B85B4E300830571 /* Controller */,
 				E6D3E1C11B85B4F800830571 /* View */,
@@ -161,6 +165,15 @@
 			);
 			name = View;
 			path = ..;
+			sourceTree = "<group>";
+		};
+		E6D3E1C91B85D39700830571 /* UICollectionViewLeftAlignedLayout */ = {
+			isa = PBXGroup;
+			children = (
+				E6D3E1CA1B85D3A300830571 /* UICollectionViewLeftAlignedLayout.h */,
+				E6D3E1CB1B85D3A300830571 /* UICollectionViewLeftAlignedLayout.m */,
+			);
+			name = UICollectionViewLeftAlignedLayout;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -264,6 +277,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E6D3E1CC1B85D3A300830571 /* UICollectionViewLeftAlignedLayout.m in Sources */,
 				E6D3E1C31B85B55E00830571 /* CollectionViewCell.swift in Sources */,
 				E6D3E1C51B85B6A600830571 /* CollectionViewHeader.swift in Sources */,
 				E6D3E1C81B85C2A300830571 /* UIButton+CollectionCellStyle.m in Sources */,
