@@ -157,7 +157,8 @@ class ViewController: UIViewController, UICollectionViewDataSource, UICollection
         if kind == UICollectionElementKindSectionHeader {
             
             collectionViewHeader = collectionView.dequeueReusableSupplementaryViewOfKind(UICollectionElementKindSectionHeader, withReuseIdentifier: kHeaderViewCellIdentifier, forIndexPath: indexPath) as! CollectionViewHeader
-            collectionViewHeader.titleL.text = dataSource.keys.array[indexPath.section]
+            collectionViewHeader.titleButton.setTitle(dataSource.keys.array[indexPath.section], forState: UIControlState.Normal)
+            collectionViewHeader.titleButton.setTitle(dataSource.keys.array[indexPath.section], forState: UIControlState.Selected)
             
         }
         
@@ -214,8 +215,11 @@ class ViewController: UIViewController, UICollectionViewDataSource, UICollection
     private func caculateItemWidth(#text:String) -> CGFloat {
         
         let size = (text as NSString).sizeWithAttributes([NSFontAttributeName:UIFont.systemFontOfSize(16)])
-        let cellWidth = ceilf(Float(size.width))
-        return CGFloat(cellWidth) + kCellBtnHorizonPadding
+        let limitWidth = CGRectGetWidth(collectionView.frame) - kCollectionViewToLeftMargin - kCollectionViewToRightMargin
+        var cellWidth:CGFloat = CGFloat(ceilf(Float(size.width))) + kCellBtnHorizonPadding
+        cellWidth = cellWidth >= limitWidth ? limitWidth : cellWidth
+        
+        return cellWidth
     }
     
     /**
