@@ -8,10 +8,35 @@
 
 import UIKit
 
-class ViewController: UIViewController, UICollectionViewDataSource, UICollectionViewDelegate {
+class ViewController: UIViewController, UICollectionViewDataSource, UICollectionViewDelegate, CollectionViewHeaderDelegate {
     
     private var dataSource      : [String:[[String:String]]]!
     private var collectionView  : UICollectionView!
+    private var expandSectionArray = [String:Bool]()                 // 每一节是否已经被展开
+    private var constructionDic : [String:[Int]]!                    // collectionView数据的排列结构
+    {
+        get{
+            // 计算
+            return caculateLayoutForDataSource()
+        }
+    }
+    private var showRowsCount   = 1                                 // 默认显示行数
+    private var numberOfItemsInSectionDic : [String:Int]!           // 每一节对应显示的items的数量
+    {
+        get {
+            
+            // 计算
+            return caculateNumberOfItemsInSectionDic()
+        }
+    }
+    private var isShowMoreBtnDic:[String:Bool]!                    // 每一节对应的更多按钮是否显示
+    {
+        get {
+            
+            // 计算
+            return caculateIsShowMoreBtnDic()
+        }
+    }
     
     let kCellIdentifier           = "CellIdentifier"                // 重用单元格ID
     let kHeaderViewCellIdentifier = "HeaderViewCellIdentifier"      // 重用标题ID
@@ -38,15 +63,6 @@ class ViewController: UIViewController, UICollectionViewDataSource, UICollection
         
         setup()
         
-        // 打印
-        // println(NSDictionary(dictionary: dataSource).descriptionWithLocale(nil))
-        // println(dataSource.keys.array)
-        
-        for(var i=0;i<dataSource.keys.array.count;i++) {
-            
-            var rowsArray = caculateItemsCountForEveryRow(items: arrayForSection(section: i))
-            println(rowsArray)
-        }
     }
 
     override func didReceiveMemoryWarning() {
@@ -127,7 +143,17 @@ class ViewController: UIViewController, UICollectionViewDataSource, UICollection
      */
     func collectionView(collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         
-        return dataSource[dataSource.keys.array[section]]!.count
+        let key = dataSource.keys.array[section]
+        
+        if let flag = expandSectionArray[key] {
+            
+            if flag {
+                
+                return dataSource[key]!.count
+            }
+        }
+        
+        return numberOfItemsInSectionDic[dataSource.keys.array[section]]!
     }
     
     /**
@@ -141,6 +167,9 @@ class ViewController: UIViewController, UICollectionViewDataSource, UICollection
         let item  = dicForItem(indexPath: indexPath)
         let text  = item[kDataSourceCellTextKey]
         let img   = item[kDataSourceCellPictureKey]
+        
+        // 重新计算button frame
+        collectionViewCell.button.frame = CGRectMake(0, 0, CGRectGetWidth(collectionViewCell.frame), CGRectGetHeight(collectionViewCell.frame))
         
         // 文字
         collectionViewCell.button.setTitle(text, forState: UIControlState.Normal)
@@ -184,6 +213,25 @@ class ViewController: UIViewController, UICollectionViewDataSource, UICollection
             collectionViewHeader = collectionView.dequeueReusableSupplementaryViewOfKind(UICollectionElementKindSectionHeader, withReuseIdentifier: kHeaderViewCellIdentifier, forIndexPath: indexPath) as! CollectionViewHeader
             collectionViewHeader.titleButton.setTitle(dataSource.keys.array[indexPath.section], forState: UIControlState.Normal)
             collectionViewHeader.titleButton.setTitle(dataSource.keys.array[indexPath.section], forState: UIControlState.Selected)
+            
+            // 是否显示更多
+            let key = dataSource.keys.array[indexPath.section]
+            collectionViewHeader.rightButton.hidden = !isShowMoreBtnDic[key]!
+            collectionViewHeader.rightButton.tag = indexPath.section
+            
+            // 设置代理
+            collectionViewHeader.delegate = self
+            
+            // 设置rightButton状态
+            if let flag = expandSectionArray[key] {
+                if flag {
+                    
+                    collectionViewHeader.rightButton.selected = true
+                } else {
+                    
+                    collectionViewHeader.rightButton.selected = false
+                }
+            }
             
         }
         
@@ -232,7 +280,7 @@ class ViewController: UIViewController, UICollectionViewDataSource, UICollection
     /**
      * 返回item的width
      *
-     * @indexPath item单元格数据
+     * @item item单元格数据
      * 
      * @return item的宽度
      */
@@ -336,7 +384,7 @@ class ViewController: UIViewController, UICollectionViewDataSource, UICollection
     }
     
     /**
-     * 返回指定数组每行包行的单元格个数
+     * 返回指定节item的分布结构，例如：[4,3] 表示 指定节第一行有4个元素，第二行有3个元素
      * @param items
      * 
      * @return 行数组
@@ -355,13 +403,30 @@ class ViewController: UIViewController, UICollectionViewDataSource, UICollection
             
             if items.count != itemCount {
                 
-                items.removeRange(Range(start: 0,end: itemCount))
+                items.removeRange(Range(start: 0, end: itemCount))
                 
                 let itemCount = caculateItemsCountForFirstRow(items: items)
                 resultArray.append(itemCount)
             }
         }
         return resultArray
+    }
+    
+    /**
+     * 返回整个collection的布局,例如：["菜系":[4,3],"厨房工具":[2,2]] 表示 菜系 匹配的节 有两行，分别对应的元素个数为4、3
+     * 
+     * @return 整个collection的布局
+     */
+    private func caculateLayoutForDataSource() -> [String:[Int]] {
+        
+        var resultDic = [String:[Int]]()
+        
+        for key in dataSource.keys.array {
+            
+            let tempArray = caculateItemsCountForEveryRow(items: dataSource[key]!)
+            resultDic[key] = tempArray
+        }
+        return resultDic
     }
     
     /**
@@ -378,6 +443,55 @@ class ViewController: UIViewController, UICollectionViewDataSource, UICollection
             resultArray.append(rowsCount)
         }
         return resultArray
+    }
+    
+    /**
+     * 返回每节对应显示items的个数
+     */
+    private func caculateNumberOfItemsInSectionDic() -> [String:Int] {
+        
+        var resultDic = [String:Int]()
+        
+        for key in constructionDic.keys.array {
+            
+            var sum: Int = 0
+            let rowsArray = constructionDic[key]!
+            
+            for (var i=0; i<rowsArray.count; i++) {
+                
+                if i < showRowsCount {
+                    
+                    sum += rowsArray[i]
+                } else {
+                    break
+                }
+            }
+            resultDic[key] = sum
+        }
+        return resultDic
+    }
+    
+    /**
+     * 返回每个节是否应该显示更多按钮
+     */
+    private func caculateIsShowMoreBtnDic() -> [String: Bool] {
+        
+        var resultDic = [String: Bool]()
+        
+        for key in constructionDic.keys.array {
+            
+            let rowsArray = constructionDic[key]!
+            
+            if rowsArray.count > showRowsCount {
+                
+                resultDic[key] = true
+            } else {
+                
+                resultDic[key] = false
+            }
+        }
+        
+        return resultDic
     }
     
     // MARK: -  处理数据
@@ -402,6 +516,24 @@ class ViewController: UIViewController, UICollectionViewDataSource, UICollection
         let item  = items[indexPath.row]
         
         return item
+    }
+    
+    // MARK: - CollectionViewHeaderDelegate
+    
+    func collectionViewHeaderMoreBtnClicked(sender: UIButton) {
+        
+        sender.selected = !sender.selected
+        let key = dataSource.keys.array[sender.tag]
+        expandSectionArray[key] = sender.selected
+        
+        // 更新collectionView
+        collectionView.performBatchUpdates({ () -> Void in
+            
+            let section = NSIndexSet(index: sender.tag)
+            self.collectionView.reloadSections(section)
+        }, completion: { (finished) -> Void in
+            
+        })
     }
 }
 

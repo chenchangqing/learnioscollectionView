@@ -8,6 +8,11 @@
 
 import UIKit
 
+@objc protocol CollectionViewHeaderDelegate {
+    
+    func collectionViewHeaderMoreBtnClicked(sender:UIButton)
+}
+
 class CollectionViewHeader: UICollectionReusableView {
     
     var titleButton: UIButton!
@@ -20,6 +25,8 @@ class CollectionViewHeader: UICollectionReusableView {
     
     let kHeaderViewHeigt    :CGFloat = 38
     let kImageToTextMargin  :CGFloat = 7
+    
+    var delegate:CollectionViewHeaderDelegate?
     
     // MARK: -
     
@@ -102,6 +109,19 @@ class CollectionViewHeader: UICollectionReusableView {
         
         // add
         self.addSubview(rightButton)
+        
+        // event
+        rightButton.addTarget(self, action: Selector("moreBtnClicked:"), forControlEvents: UIControlEvents.TouchUpInside)
 
+    }
+    
+    // MARK: - moreBtn clicked
+    
+    func moreBtnClicked(sender:UIButton) {
+        
+        if let delegate=delegate {
+            
+            delegate.collectionViewHeaderMoreBtnClicked(sender)
+        }
     }
 }
